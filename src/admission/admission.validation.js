@@ -31,23 +31,7 @@ const admissionTeacherValidation = (data) => {
   return schema.validate(data);
 };
 
-const admissionValidation = (data) => {
-  const schema = Joi.object({
-    nameMajors: Joi.string().required(),
-    email: Joi.string()
-      .email({
-        minDomainSegments: 2,
-        tlds: { allow: ["com", "net"] },
-      })
-      .required(),
-    information: Joi.object().required(),
-    job: Joi.string().required(),
-  });
-  return schema.validate(data);
-};
-
 module.exports = {
   admissionStudentValidation,
-  admissionValidation,
   admissionTeacherValidation,
 };
