@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const majorsSchema = new mongoose.Schema({
-  majorsCode: {
+  majorCode: {
     type: String,
     required: true,
   },
-  nameMajors: {
+  nameMajor: {
     type: String,
     required: true,
   },

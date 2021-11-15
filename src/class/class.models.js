@@ -13,16 +13,15 @@ const classSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     min: 0,
+    max: 15,
+    default: 0,
   },
-  teacherCode: {
+  majorCode: {
     type: String,
-  },
-  codeStudents: {
-    type: Array,
     required: true,
   },
 });
 
-const Class = mongoose.model("Class", classSchema, "Class");
+const ClassModels = mongoose.model("ClassModels", classSchema, "Class");
 
-module.exports = Class;
+module.exports = ClassModels;

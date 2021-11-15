@@ -1,7 +1,8 @@
 const { v4: uuid_v4 } = require("uuid");
+const ClassOfSchool = require("./Class");
 
 const { Student, Teacher } = require("../users/users.models");
-const Class = require("./class.models");
+const ClassModels = require("./class.models");
 const Majors = require("../majors/majors.models");
 
 const saveData = require("../../validation/saveData");
@@ -12,7 +13,8 @@ const CurrentYear = new Date().getFullYear() % 100;
 
 const joinStudent = async (req, res) => {
   try {
-    const { major } = req.body;
+    const classOfSchool = new ClassOfSchool();
+    const { list_student, major } = req.body;
 
     const quantityStudentInMajor = await Student.find({
       majorsCode: major,
@@ -47,14 +49,14 @@ const joinStudent = async (req, res) => {
         codeStudents: arr_uuid_student,
       };
 
-      const checkClass = await Class.findOne({ nameClass });
+      const checkClass = await ClassModels.findOne({ nameClass });
 
       if (checkClass) {
         index++;
         continue;
       }
 
-      await saveData(Class, infoClass);
+      await saveData(ClassModels, infoClass);
       index++;
     } while (true);
 
@@ -64,7 +66,30 @@ const joinStudent = async (req, res) => {
   }
 };
 
-const addStudent = async (req, res) => {};
+const createClass = async (req, res) => {
+  try {
+    const { major } = req.body;
+    const classOfSchool = new ClassOfSchool(null, major, ClassModels);
+
+    const find_major = await Majors.findOne({ majorCode: major });
+
+    classOfSchool.createClass(find_major.nameMajor);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const addStudent = async (req, res) => {
+  try {
+    const { list_student, classCode } = req.body;
+    const classOfSchool = new ClassOfSchool(classCode, null, ClassModels);
+    await classOfSchool.addStudentForClass(list_student);
+
+    res.json({ msg: "success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
 
 const joinTeacher = async (req, res) => {
   try {
@@ -87,7 +112,7 @@ const joinTeacher = async (req, res) => {
     };
 
     const arr_update = [
-      await Class.findOneAndUpdate({ classCode }, updateClass),
+      await ClassModels.findOneAndUpdate({ classCode }, updateClass),
       await Teacher.findOneAndUpdate(
         { teacherCode: uuid_teacher },
         updateTeacher
@@ -102,4 +127,4 @@ const joinTeacher = async (req, res) => {
   }
 };
 
-module.exports = { joinStudent, joinTeacher };
+module.exports = { createClass, addStudent };

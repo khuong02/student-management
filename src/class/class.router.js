@@ -1,8 +1,8 @@
 const router = require("express").Router();
-const { joinStudent, joinTeacher } = require("./class.controller");
+const { createClass, addStudent } = require("./class.controller");
 
-router.post("/join_student", joinStudent);
+router.post("/create_class", createClass);
 
-router.post("/join_teacher", joinTeacher);
+router.post("/add_student", addStudent);
 
 module.exports = router;

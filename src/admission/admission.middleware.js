@@ -17,7 +17,6 @@ const admissionStudentMiddleware = (model) => {
 
       const { name, email, address, point, aspirations_arr, birthday } =
         req.body;
-
       //achieve a major
       const resultMajors = await majorModel
         .find({
@@ -30,25 +29,28 @@ const admissionStudentMiddleware = (model) => {
           return aspirations.filter((item) => point >= item.benchmark)[0];
         });
 
-      if (!resultMajors)
-        return res.status(400).json({ msg: "You don't have enough points." });
-
+      if (!resultMajors) {
+        await sendMailFunc({ name, email }, false);
+        return res
+          .status(400)
+          .json({ msg: "Please wait and check when is the announcement." });
+      }
       if (resultMajors.msg)
         return res.status(400).json({ msg: resultMajors.msg });
 
       const { majorsCode, nameMajors } = resultMajors;
 
-      const infoRegister = {
-        name,
-        email,
-        address,
-        point,
-        aspirations_arr,
-        birthday,
-        major: majorsCode,
-      };
+      //   const infoRegister = {
+      //     name,
+      //     email,
+      //     address,
+      //     point,
+      //     aspirations_arr,
+      //     birthday,
+      //     major: majorsCode,
+      //   };
 
-      await saveData(model, infoRegister);
+      //   await saveData(model, infoRegister);
 
       const { accountOfStudent, studentCode } = await student.createCode(
         majorsCode
@@ -76,12 +78,20 @@ const admissionStudentMiddleware = (model) => {
         nameMajors,
       };
 
-      Promise.all([sendMailFunc(contentMail), saveData(Student, information)])
+      Promise.all([
+        sendMailFunc(contentMail, true),
+        saveData(Student, information),
+      ])
         .then(() => {
-          res.results = { msg: "Please check your mail!" };
+          res.results = {
+            msg: "Please wait and check when is the announcement.",
+          };
           next();
         })
-        .catch((err) => (res.results = { msg: err }));
+        .catch((err) => {
+          res.results = { msg: err };
+          next();
+        });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
@@ -129,7 +139,9 @@ const admissionTeacherMiddleware = (model) => {
 
       Promise.all([sendMailFunc(contentMail), saveData(Teacher, information)])
         .then(() => {
-          res.results = { msg: "Please check your mail!" };
+          res.results = {
+            msg: "Please wait and check when is the announcement.",
+          };
           next();
         })
         .catch((err) => (res.results = { msg: err }));

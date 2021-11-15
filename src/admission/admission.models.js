@@ -31,6 +31,8 @@ const admissionSchema = new mongoose.Schema({
   },
 });
 
+admissionSchema.indexes({ createAt: 1 }, { expireAfterSeconds: 604800 });
+
 const Admission = mongoose.model(
   "Admission",
   admissionSchema,

@@ -27,12 +27,12 @@ const studentSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  birthday: {
-    type: Date,
-    required: true,
-  },
   password: {
     type: String,
+    required: true,
+  },
+  birthday: {
+    type: Date,
     required: true,
   },
   majorsCode: {
@@ -43,6 +43,9 @@ const studentSchema = new mongoose.Schema({
     type: String,
   },
   address: {
+    type: String,
+  },
+  classCode: {
     type: String,
   },
 });
@@ -84,9 +87,6 @@ const teacherSchema = new mongoose.Schema({
     required: true,
   },
   address: {
-    type: String,
-  },
-  classCodeMain: {
     type: String,
   },
 });
