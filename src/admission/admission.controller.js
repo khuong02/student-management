@@ -1,9 +1,5 @@
-const admissionStudentCrl = async (req, res) => {
+const admissionCrl = async (req, res) => {
   res.json(res.results);
 };
 
-const admissionTeacherCrl = async (req, res) => {
-  res.json(res.results);
-};
-
-module.exports = { admissionStudentCrl, admissionTeacherCrl };
+module.exports = admissionCrl;

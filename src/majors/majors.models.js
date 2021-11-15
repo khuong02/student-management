@@ -22,6 +22,10 @@ const majorsSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
+  acceptStudent: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const majorsModel = mongoose.model("majorsModel", majorsSchema, "Majors");

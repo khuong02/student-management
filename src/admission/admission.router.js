@@ -1,28 +1,21 @@
 const router = require("express").Router();
-const {
-  admissionStudentCrl,
-  admissionTeacherCrl,
-} = require("./admission.controller");
-const admissionMiddleware = require("./admission.middleware");
+const admissionCrl = require("./admission.controller");
 const {
   admissionStudentMiddleware,
   admissionTeacherMiddleware,
-} = require("./admissionCheckData.middleware");
-const { Student, Teacher } = require("../users/users.models");
-const Admission = require("./admission.models");
+} = require("./admission.middleware");
+const admission_models = require("./admission.models");
 
 router.post(
   "/student",
-  admissionStudentMiddleware(Admission),
-  admissionMiddleware(Student),
-  admissionStudentCrl
+  admissionStudentMiddleware(admission_models),
+  admissionCrl
 );
 
 router.post(
   "/teacher",
-  admissionTeacherMiddleware(Admission),
-  admissionMiddleware(Teacher),
-  admissionTeacherCrl
+  admissionTeacherMiddleware(admission_models),
+  admissionCrl
 );
 
 module.exports = router;
