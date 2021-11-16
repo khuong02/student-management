@@ -34,12 +34,12 @@ class StudentAdmission extends Admission {
   // create code of student
   createCode = async (majorCode) => {
     const count = await StudentInMajors.countDocuments({ majorCode }).exec();
-    const Major = await majorModel.findOne({ majorsCode: majorCode });
+    const Major = await majorModel.findOne({ majorCode });
     const quantity = count == 0 ? 1 : count + 1;
 
     if (quantity >= Major.quantity) {
       await majorModel.findOneAndUpdate(
-        { majorsCode: majorCode },
+        { majorCode },
         { acceptStudent: false }
       );
       throw new Error("Target has been reached.");
@@ -51,7 +51,10 @@ class StudentAdmission extends Admission {
 
     if (check) throw new Error("Student does exist.");
 
-    await saveData(StudentInMajors, { majorCode, studentCode: formatCode });
+    await saveData(StudentInMajors, {
+      majorCode,
+      studentCode: formatCode,
+    });
 
     return {
       accountOfStudent: this.createAccount(formatCode),

@@ -30,8 +30,11 @@ const admissionSchema = new mongoose.Schema({
     type: String,
   },
 });
+// const remove = async () => {
+//   await Admission.remove();
+// };
 
-admissionSchema.indexes({ createAt: 1 }, { expireAfterSeconds: 604800 });
+// remove();
 
 const Admission = mongoose.model(
   "Admission",

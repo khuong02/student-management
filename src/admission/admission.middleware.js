@@ -14,56 +14,66 @@ const admissionStudentMiddleware = (model) => {
       const student = new StudentAdmission(req.body, Student);
       //check information
       student.checkInfo();
+      const setAspiration = [];
 
       const { name, email, address, point, aspirations_arr, birthday } =
         req.body;
+
+      if (aspirations_arr.length > 3)
+        return res.status(400).json({ msg: "Max aspiration is 3" });
       //achieve a major
-      const resultMajors = await majorModel
-        .find({
-          majorsCode: { $in: aspirations_arr },
-        })
-        .then((aspirations) => {
-          if (aspirations.length === 0)
-            return { msg: "Majors does not exist." };
+      //   const resultMajors = await majorModel
+      //     .find({
+      //       majorCode: aspirations_arr,
+      //     })
+      //     .then((aspirations) => {
+      //       if (aspirations.length === 0)
+      //         return { msg: "Majors does not exist." };
 
-          return aspirations.filter((item) => point >= item.benchmark)[0];
+      //       return aspirations.filter((item) => point >= item.benchmark)[0];
+      //     });
+      for (let i = 0; i < aspirations_arr.length; i++) {
+        const find_major = await majorModel.findOne({
+          majorCode: aspirations_arr[i],
         });
+        if (!find_major)
+          return res.status(400).json({ msg: "Majors does not exist" });
+        if (point >= find_major.benchmark) setAspiration.push(find_major);
+      }
 
-      if (!resultMajors) {
+      const resultMajors = setAspiration[0];
+
+      if (!resultMajors || resultMajors.length === 0) {
         await sendMailFunc({ name, email }, false);
         return res
           .status(400)
           .json({ msg: "Please wait and check when is the announcement." });
       }
-      if (resultMajors.msg)
-        return res.status(400).json({ msg: resultMajors.msg });
 
-      const { majorsCode, nameMajors } = resultMajors;
+      const { majorCode, nameMajor } = resultMajors;
 
-      //   const infoRegister = {
-      //     name,
-      //     email,
-      //     address,
-      //     point,
-      //     aspirations_arr,
-      //     birthday,
-      //     major: majorsCode,
-      //   };
-
-      //   await saveData(model, infoRegister);
+      const infoRegister = {
+        name,
+        email,
+        address,
+        point,
+        aspirations_arr,
+        birthday,
+        major: majorCode,
+      };
 
       const { accountOfStudent, studentCode } = await student.createCode(
-        majorsCode
+        majorCode
       );
 
       const { account, password } = accountOfStudent;
       const information = {
         name,
         address,
-        majorsCode,
+        majorCode,
         studentCode,
         birthday: new Date(birthday),
-        schoolYear: student.CurrentYear,
+        schoolYear: new Date().getFullYear(),
         account,
         password: await hashPassword(password),
         uuid: uuid_v4(),
@@ -75,23 +85,16 @@ const admissionStudentMiddleware = (model) => {
         code: studentCode,
         account,
         password,
-        nameMajors,
+        nameMajor,
       };
 
-      Promise.all([
-        sendMailFunc(contentMail, true),
-        saveData(Student, information),
-      ])
-        .then(() => {
-          res.results = {
-            msg: "Please wait and check when is the announcement.",
-          };
-          next();
-        })
-        .catch((err) => {
-          res.results = { msg: err };
-          next();
-        });
+      //   await saveData(Student, information);
+      //   await saveData(model, infoRegister);
+      //   await sendMailFunc(contentMail, true);
+      res.results = {
+        msg: "Please wait and check when is the announcement.",
+      };
+      next();
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
@@ -120,7 +123,7 @@ const admissionTeacherMiddleware = (model) => {
       const information = {
         name,
         address,
-        majorsCode: major,
+        majorCode: major,
         teacherCode,
         birthday: new Date(birthday),
         account,
@@ -134,7 +137,7 @@ const admissionTeacherMiddleware = (model) => {
         code: teacherCode,
         account,
         password,
-        nameMajors: checkMajor.nameMajors,
+        nameMajor: checkMajor.nameMajor,
       };
 
       Promise.all([sendMailFunc(contentMail), saveData(Teacher, information)])

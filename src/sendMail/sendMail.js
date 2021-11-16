@@ -9,14 +9,15 @@ module.exports = async function sendMailFunc(contentMail, accept) {
 
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     service: "Gmail",
     auth: {
       user: process.env.ACCOUNT_EMAIL, // generated ethereal user
       pass: process.env.PASSWORD_EMAIL, // generated ethereal password
     },
     tls: { rejectUnauthorized: false },
-    logger: true,
-    debug: true,
   });
 
   const mailOptions = {

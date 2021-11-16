@@ -1,4 +1,6 @@
 const RefreshToken = require("../../models/refreshToken.models");
+const TeacherModels = require("./users.models").Teacher;
+const StudentModels = require("./users.models").Student;
 
 const bcrypt = require("bcrypt");
 const hashPassword = require("../../validation/hashPassword");
@@ -72,6 +74,11 @@ class User {
 
     return { success: true, msg: "Change password success!" };
   };
+}
+
+class Student extends User {}
+class Teacher extends User {
+  updatePointForStudent = () => {};
 }
 
 module.exports = User;

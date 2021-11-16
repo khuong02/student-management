@@ -35,7 +35,7 @@ const studentSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  majorsCode: {
+  majorCode: {
     type: String,
     required: true,
   },
@@ -82,7 +82,7 @@ const teacherSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  majorsCode: {
+  majorCode: {
     type: String,
     required: true,
   },
