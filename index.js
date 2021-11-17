@@ -13,7 +13,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/admission", require("./src/admission/admission.router"));
 app.use("/api/majors", require("./src/majors/majors.routers"));
 app.use("/api/user", require("./src/users/users.routers"));
-app.use("/api/class", require("./src/class/class.router"));
 app.use("/api/assignment", require("./src/assignment/assignment.router"));
 
 //connection with mongodb
