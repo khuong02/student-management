@@ -4,14 +4,14 @@ const hashPassword = require("../../validation/hashPassword");
 const { v4: uuid_v4 } = require("uuid");
 
 const majorModel = require("../majors/majors.models");
-const { Student, Teacher } = require("../users/users.models");
+const { StudentModels, TeacherModels } = require("../users/users.models");
 const saveData = require("../../validation/saveData");
-const { sendMailFunc } = require("../sendMail");
+const sendMailFunc = require("../sendMail/sendMail");
 
 const admissionStudentMiddleware = (model) => {
   return async (req, res, next) => {
     try {
-      const student = new StudentAdmission(req.body, Student);
+      const student = new StudentAdmission(req.body, StudentModels);
       //check information
       student.checkInfo();
       const setAspiration = [];
@@ -21,17 +21,7 @@ const admissionStudentMiddleware = (model) => {
 
       if (aspirations_arr.length > 3)
         return res.status(400).json({ msg: "Max aspiration is 3" });
-      //achieve a major
-      //   const resultMajors = await majorModel
-      //     .find({
-      //       majorCode: aspirations_arr,
-      //     })
-      //     .then((aspirations) => {
-      //       if (aspirations.length === 0)
-      //         return { msg: "Majors does not exist." };
 
-      //       return aspirations.filter((item) => point >= item.benchmark)[0];
-      //     });
       for (let i = 0; i < aspirations_arr.length; i++) {
         const find_major = await majorModel.findOne({
           majorCode: aspirations_arr[i],
@@ -88,9 +78,9 @@ const admissionStudentMiddleware = (model) => {
         nameMajor,
       };
 
-      //   await saveData(Student, information);
-      //   await saveData(model, infoRegister);
-      //   await sendMailFunc(contentMail, true);
+      await saveData(StudentModels, information);
+      await saveData(model, infoRegister);
+      await sendMailFunc(contentMail, true);
       res.results = {
         msg: "Please wait and check when is the announcement.",
       };
@@ -105,7 +95,7 @@ const admissionTeacherMiddleware = (model) => {
   return async (req, res, next) => {
     try {
       //check data request
-      const teacher = new TeacherAdmission(req.body, Teacher);
+      const teacher = new TeacherAdmission(req.body, TeacherModels);
       //check information
       teacher.checkInfo();
 
@@ -140,7 +130,10 @@ const admissionTeacherMiddleware = (model) => {
         nameMajor: checkMajor.nameMajor,
       };
 
-      Promise.all([sendMailFunc(contentMail), saveData(Teacher, information)])
+      Promise.all([
+        sendMailFunc(contentMail),
+        saveData(TeacherModels, information),
+      ])
         .then(() => {
           res.results = {
             msg: "Please wait and check when is the announcement.",

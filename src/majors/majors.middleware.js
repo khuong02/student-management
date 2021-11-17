@@ -9,14 +9,14 @@ const addMajors = (model) => {
 
       if (error) return res.status(400).json({ msg: error.details[0].message });
 
-      const { nameMajors, majorsCode, benchmark, quantity } = req.body;
+      const { nameMajor, majorCode, benchmark, quantity } = req.body;
 
-      const majors = await model.findOne({ majorsCode });
+      const majors = await model.findOne({ majorCode });
       if (majors) return res.status(400).json({ msg: "Majors does exist." });
 
       const content = {
-        nameMajors,
-        majorsCode,
+        nameMajor,
+        majorCode,
         benchmark,
         uuid: uuid_v4(),
         quantity,
@@ -37,16 +37,16 @@ const addMajors = (model) => {
 const changeBenchmark = (model) => {
   return async (req, res, next) => {
     try {
-      const { majorsCode, newBenchmark } = req.body;
+      const { majorCode, newBenchmark } = req.body;
 
-      if (!majorsCode)
+      if (!majorCode)
         return res.status(400).json("Please choose majors you want to change.");
 
       if (!newBenchmark) return;
 
       const update = { benchmark: newBenchmark };
 
-      await model.findOneAndUpdate({ majorsCode }, update);
+      await model.findOneAndUpdate({ majorCode }, update);
 
       next();
     } catch (err) {

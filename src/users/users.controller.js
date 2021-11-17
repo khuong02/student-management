@@ -1,7 +1,9 @@
 const Users = require("./users.models");
 const RefreshToken = require("../../models/refreshToken.models");
+const { StudentModels } = require("./users.models");
+const Majors = require("../majors/majors.models");
 
-const User = require("./User");
+const { User, Student, Teacher, Admin } = require("./User");
 
 const { checkRoles } = require("./users.validation");
 
@@ -107,10 +109,78 @@ const changePassword = async (req, res) => {
   }
 };
 
+const createClass = async (req, res) => {
+  try {
+    const { major } = req.body;
+    const teacher = new Teacher();
+
+    const find_major = await Majors.findOne({ majorCode: major });
+
+    if (!find_major)
+      return res.status(400).json({ msg: "Major does not exist" });
+
+    teacher.createClass(find_major.nameMajor, major);
+    res.json({ msg: "Create class success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const removeStudent = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const teacher = new Teacher();
+    await teacher.removeStudent(uuid);
+    res.json({ msg: "Delete student success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const addStudent = async (req, res) => {
+  try {
+    const { list_student, classCode } = req.body;
+    const teacher = new Teacher();
+    await teacher.addStudentForClass(list_student, classCode);
+
+    res.json({ msg: "success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const deleteClass = async (req, res) => {
+  try {
+    const { classCode } = req.params;
+    const teacher = new Teacher();
+
+    await teacher.deleteClass(classCode);
+    res.json({ msg: "Delete class success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const removeTeacher = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const admin = new Admin();
+    await admin.removeTeacher(uuid);
+    res.json({ msg: "Delete teacher success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
 module.exports = {
   login,
   getDataUser,
   refreshTokenCrl,
   logout,
   changePassword,
+  removeStudent,
+  addStudent,
+  createClass,
+  deleteClass,
+  removeTeacher,
 };

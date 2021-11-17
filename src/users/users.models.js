@@ -47,6 +47,7 @@ const studentSchema = new mongoose.Schema({
   },
   classCode: {
     type: String,
+    default: "",
   },
 });
 
@@ -91,8 +92,8 @@ const teacherSchema = new mongoose.Schema({
   },
 });
 
-const Student = mongoose.model("Student", studentSchema, "Student");
+const StudentModels = mongoose.model("StudentModels", studentSchema, "Student");
 
-const Teacher = mongoose.model("Teacher", teacherSchema, "Teacher");
+const TeacherModels = mongoose.model("TeacherModels", teacherSchema, "Teacher");
 
-module.exports = { Student, Teacher };
+module.exports = { StudentModels, TeacherModels };

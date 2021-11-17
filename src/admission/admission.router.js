@@ -1,5 +1,9 @@
 const router = require("express").Router();
-const admissionCrl = require("./admission.controller");
+const {
+  admissionCrl,
+  getAllStudentAdmission,
+  deleteAllStudentAdmission,
+} = require("./admission.controller");
 const {
   admissionStudentMiddleware,
   admissionTeacherMiddleware,
@@ -17,5 +21,9 @@ router.post(
   admissionTeacherMiddleware(admission_models),
   admissionCrl
 );
+
+router.get("/", getAllStudentAdmission);
+
+router.delete("/delete", deleteAllStudentAdmission);
 
 module.exports = router;

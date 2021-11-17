@@ -23,6 +23,14 @@ class Admission {
       password: "123456789",
     };
   };
+
+  getAllStudentAdmission = async () => {
+    return await this.models.find();
+  };
+
+  removeAllStudentAdmission = async () => {
+    return await this.models.deleteMany();
+  };
 }
 
 class StudentAdmission extends Admission {
@@ -87,4 +95,4 @@ class TeacherAdmission extends Admission {
   };
 }
 
-module.exports = { StudentAdmission, TeacherAdmission };
+module.exports = { StudentAdmission, TeacherAdmission, Admission };
