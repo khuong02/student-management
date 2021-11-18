@@ -23,7 +23,8 @@ const learningOutcomesSchema = new mongoose.Schema({
   },
   point: {
     type: Number,
-    minimum: 0,
+    min: 0,
+    max: 10,
   },
   teacherCode: {
     type: String,

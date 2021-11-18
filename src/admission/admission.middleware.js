@@ -4,7 +4,11 @@ const hashPassword = require("../../validation/hashPassword");
 const { v4: uuid_v4 } = require("uuid");
 
 const majorModel = require("../majors/majors.models");
-const { StudentModels, TeacherModels } = require("../users/users.models");
+const {
+  StudentModels,
+  TeacherModels,
+  UserModels,
+} = require("../users/users.models");
 const saveData = require("../../validation/saveData");
 const sendMailFunc = require("../sendMail/sendMail");
 
@@ -78,8 +82,16 @@ const admissionStudentMiddleware = (model) => {
         nameMajor,
       };
 
+      const infoUser = {
+        uuid: information.uuid,
+        account,
+        password: information.password,
+        roles: account[0] + account[1],
+      };
+
       await saveData(StudentModels, information);
       await saveData(model, infoRegister);
+      await saveData(UserModels, infoUser);
       await sendMailFunc(contentMail, true);
       res.results = {
         msg: "Please wait and check when is the announcement.",
@@ -130,9 +142,17 @@ const admissionTeacherMiddleware = (model) => {
         nameMajor: checkMajor.nameMajor,
       };
 
+      const infoUser = {
+        uuid: information.uuid,
+        account,
+        password: information.password,
+        roles: account[0] + account[1],
+      };
+
       Promise.all([
         sendMailFunc(contentMail),
         saveData(TeacherModels, information),
+        saveData(UserModels, infoUser),
       ])
         .then(() => {
           res.results = {

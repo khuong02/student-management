@@ -92,8 +92,29 @@ const teacherSchema = new mongoose.Schema({
   },
 });
 
+const userSchema = new mongoose.Schema({
+  uuid: {
+    type: String,
+    required: true,
+  },
+  roles: {
+    type: String,
+    required: true,
+  },
+  account: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    require: true,
+  },
+});
+
 const StudentModels = mongoose.model("StudentModels", studentSchema, "Student");
 
 const TeacherModels = mongoose.model("TeacherModels", teacherSchema, "Teacher");
 
-module.exports = { StudentModels, TeacherModels };
+const UserModels = mongoose.model("UserModels", userSchema, "User");
+
+module.exports = { StudentModels, TeacherModels, UserModels };

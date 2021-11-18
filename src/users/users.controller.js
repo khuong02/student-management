@@ -1,7 +1,7 @@
-const Users = require("./users.models");
 const RefreshToken = require("../../models/refreshToken.models");
-const { StudentModels } = require("./users.models");
+const { StudentModels, UserModels } = require("./users.models");
 const Majors = require("../majors/majors.models");
+const LearningOutcomesModels = require("../learningOutcomes/learningOutcomes.models");
 
 const { User, Student, Teacher, Admin } = require("./User");
 
@@ -24,9 +24,10 @@ const login = async (req, res) => {
 
     if (!model) return res.status(400).json({ msg: "Model does not exist." });
 
-    const user = new User(account, password, null, Users);
+    const user = new User(account, password, null, UserModels);
 
     const results = await user.login(model, generateAccessToken);
+    console.log(results);
 
     const { msg, accessToken } = results;
 
@@ -63,7 +64,7 @@ const getDataUser = async (req, res) => {
   const model = checkRoles(roles);
 
   //   const model = checkModel(account);
-  const user = new User(account, null, null, Users);
+  const user = new User(account, null, null, UserModels);
   const { userInfo, msg } = await user.getInformation(model);
 
   if (msg) return res.status(400).json({ msg });
@@ -126,11 +127,11 @@ const createClass = async (req, res) => {
   }
 };
 
-const removeStudent = async (req, res) => {
+const deleteStudent = async (req, res) => {
   try {
     const { uuid } = req.params;
     const teacher = new Teacher();
-    await teacher.removeStudent(uuid);
+    await teacher.deleteStudent(uuid);
     res.json({ msg: "Delete student success!" });
   } catch (err) {
     res.status(500).json({ msg: err.message });
@@ -161,12 +162,90 @@ const deleteClass = async (req, res) => {
   }
 };
 
-const removeTeacher = async (req, res) => {
+const deleteTeacher = async (req, res) => {
   try {
     const { uuid } = req.params;
     const admin = new Admin();
-    await admin.removeTeacher(uuid);
+    await admin.deleteTeacher(uuid);
     res.json({ msg: "Delete teacher success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const createSubject = async (req, res) => {
+  try {
+    const admin = new Admin();
+    await admin.createSubject(req.body);
+
+    res.json({ msg: "Create subject success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const deleteSubject = async (req, res) => {
+  try {
+    const { subjectCode } = req.params;
+    const admin = new Admin();
+    await admin.deleteSubject(subjectCode);
+
+    res.json({ msg: "Delete subject success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const addPointToStudent = async (req, res) => {
+  try {
+    const teacher = new Teacher();
+    await teacher.addPointToStudent(req.body);
+
+    res.json({ msg: "Update point to student success!" });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const getPoint = async (req, res) => {
+  try {
+    const { studentCode } = req.body;
+    const user = new User();
+    const results = await user.getPoint(studentCode);
+
+    if (!results) return res.status(400).json({ msg: "Student has no point" });
+
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const updatePoint = async (req, res) => {
+  try {
+    const { studentCode, teacherCode, subjectCode, point } = req.body;
+
+    const check_exist = await LearningOutcomesModels.findOne({
+      studentCode,
+      teacherCode,
+      subjectCode,
+    });
+    if (!check_exist)
+      return res
+        .status(400)
+        .json({ msg: "Students have not received points yet" });
+
+    const update = { point };
+
+    const teacher = new Teacher();
+    await teacher.updatePointToStudent(
+      studentCode,
+      teacherCode,
+      subjectCode,
+      update
+    );
+
+    res.json({ msg: "Update success!" });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
@@ -178,9 +257,14 @@ module.exports = {
   refreshTokenCrl,
   logout,
   changePassword,
-  removeStudent,
+  deleteStudent,
   addStudent,
   createClass,
   deleteClass,
-  removeTeacher,
+  deleteTeacher,
+  createSubject,
+  deleteSubject,
+  addPointToStudent,
+  getPoint,
+  updatePoint,
 };

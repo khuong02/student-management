@@ -18,7 +18,11 @@ const subjectSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  majorsCode: {
+  majorCode: {
+    type: String,
+    required: true,
+  },
+  typeSubject: {
     type: String,
     required: true,
   },

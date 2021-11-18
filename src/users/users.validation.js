@@ -7,7 +7,7 @@ const usersValidation = (account) => {
 };
 
 const checkRoles = (roles) => {
-  return roles === "01" ? "Teacher" : "Student";
+  return roles === "01" ? "TeacherModels" : "StudentModels";
 };
 
 const passwordValidation = (data) => {

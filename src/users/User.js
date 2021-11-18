@@ -1,10 +1,14 @@
 const { v4: uuid_v4 } = require("uuid");
 
+const Users = require("./users.models");
 const RefreshToken = require("../../models/refreshToken.models");
 const StudentInMajor = require("../studentInMajor/studentInMajor.models");
 const ClassModels = require("../class/class.models");
 const { StudentModels, TeacherModels } = require("./users.models");
 const AssignMentModels = require("../assignment/assignment.models");
+const SubjectsModels = require("../subjects/subjects.models");
+const MajorModels = require("../majors/majors.models");
+const LearningOutcomesModels = require("../learningOutcomes/learningOutcomes.models");
 
 const bcrypt = require("bcrypt");
 const hashPassword = require("../../validation/hashPassword");
@@ -26,7 +30,7 @@ class User {
     //check account
     if (!usersValidation(this.account)) return { msg: "Account is correct." };
 
-    const user = await this.models[model].findOne({ account: this.account });
+    const user = await this.models.findOne({ account: this.account });
     if (!user) return { msg: "Account does not already exists." };
 
     const checkRefreshTokenInvalid = await RefreshToken.findOne({
@@ -59,9 +63,10 @@ class User {
   };
 
   getInformation = async (model) => {
-    const user = await this.models[model].findOne({ account: this.account });
+    const user = await this.models.findOne({ account: this.account });
+    const userInfo = await Users[model].findOne({ uuid: user.uuid });
     if (!user) return { msg: "User does not exist." };
-    return { userInfo: user };
+    return { userInfo };
   };
 
   changePassword = async (model, uuid, data) => {
@@ -79,21 +84,58 @@ class User {
 
     return { success: true, msg: "Change password success!" };
   };
+
+  getPoint = async (studentCode) => {
+    const results = {};
+    const student = await StudentModels.findOne({ studentCode });
+
+    if (!student)
+      throw new Error(
+        `Student with student code ${studentCode} does not exist`
+      );
+
+    const learningOutcomes = await LearningOutcomesModels.findOne({
+      studentCode: student.uuid,
+    });
+
+    if (!learningOutcomes) throw new Error("Point has not been updated");
+
+    const { subjectCode, point, exam, semester } = learningOutcomes;
+
+    const { nameSubject } = await SubjectsModels.findOne({
+      subjectCode,
+    });
+
+    if (point >= 5) results.result = "Đậu";
+    else results.result = exam == 2 ? "Rớt" : "Thi lại";
+
+    return { ...results, point, nameSubject, exam, semester };
+  };
 }
 
-class Student extends User {
-  getPoint = () => {};
-}
+class Student extends User {}
 
 class Teacher extends User {
-  removeStudent = async (uuid) => {
+  deleteStudent = async (uuid) => {
     const check_delete = await StudentModels.findOneAndDelete({ uuid });
     if (!check_delete)
       throw new Error(`Student with student code ${uuid} does not exist`);
+    if (check_delete.classCode) {
+      const current_quantity = await ClassModels.findOne({
+        classCode: check_delete.classCode,
+      });
+      await ClassModels.findOneAndUpdate(
+        { classCode: check_delete.classCode },
+        { quantity: current_quantity.quantity - 1 }
+      );
+    }
+
     await StudentInMajor.findOneAndDelete({ uuid });
   };
 
   createClass = async (nameMajor, majorCode) => {
+    const check_major = await MajorModels.findOne({ majorCode });
+    if (!check_major) throw new Error("Major does not exist");
     //count class in major
     const count = await ClassModels.countDocuments({ majorCode }).count();
 
@@ -124,7 +166,7 @@ class Teacher extends User {
 
     for (let i = 0; i < list_student.length; i++) {
       const find_student = await StudentModels.findOne({
-        studentCode: list_student[i],
+        uuid: list_student[i],
       });
 
       if (!find_student)
@@ -143,7 +185,7 @@ class Teacher extends User {
 
     await StudentModels.updateMany(
       {
-        studentCode: { $in: list_student },
+        uuid: { $in: list_student },
       },
       { $set: { classCode } }
     );
@@ -168,11 +210,30 @@ class Teacher extends User {
     if (!check_delete) throw new Error("This class does not exist.");
   };
 
-  updatePointForStudent = () => {};
+  addPointToStudent = async (infoRequest) => {
+    const { classCode, subjectCode, semester, teacherCode, studentCode } =
+      infoRequest;
+    if (typeof infoRequest !== "object")
+      throw new Error("Data must is type object.");
+
+    await saveData(LearningOutcomesModels, infoRequest);
+  };
+
+  updatePointToStudent = async (
+    studentCode,
+    teacherCode,
+    subjectCode,
+    update
+  ) => {
+    await LearningOutcomesModels.findOneAndUpdate(
+      { studentCode, teacherCode, subjectCode },
+      update
+    );
+  };
 }
 
 class Admin extends Teacher {
-  removeTeacher = async (uuid) => {
+  deleteTeacher = async (uuid) => {
     const check_delete = await TeacherModels.findOneAndDelete({ uuid });
 
     if (!check_delete)
@@ -185,6 +246,31 @@ class Admin extends Teacher {
       await AssignMentModels.findOneAndDelete({
         uuid,
       });
+  };
+
+  createSubject = async (infoRequest) => {
+    if (typeof infoRequest !== "object")
+      throw new Error("Data must is type object.");
+    const check_major = await MajorModels.findOne({
+      majorCode: infoRequest.majorCode,
+    });
+
+    if (!check_major) throw new Error("Major does not exist");
+
+    const infoSubject = {
+      subjectCode: uuid_v4(),
+      ...infoRequest,
+    };
+
+    await saveData(SubjectsModels, infoSubject);
+  };
+
+  deleteSubject = async (subjectCode) => {
+    const check_subject = await SubjectsModels.findOneAndDelete({
+      subjectCode,
+    });
+
+    if (!check_subject) throw new Error("Subject does not exist");
   };
 }
 
