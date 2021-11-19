@@ -211,8 +211,8 @@ class Teacher extends User {
   };
 
   addPointToStudent = async (infoRequest) => {
-    const { classCode, subjectCode, semester, teacherCode, studentCode } =
-      infoRequest;
+    // const { classCode, subjectCode, semester, teacherCode, studentCode } =
+    //   infoRequest;
     if (typeof infoRequest !== "object")
       throw new Error("Data must is type object.");
 

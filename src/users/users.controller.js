@@ -223,7 +223,8 @@ const getPoint = async (req, res) => {
 
 const updatePoint = async (req, res) => {
   try {
-    const { studentCode, teacherCode, subjectCode, point } = req.body;
+    const { studentCode } = req.params;
+    const { teacherCode, subjectCode, point } = req.body;
 
     const check_exist = await LearningOutcomesModels.findOne({
       studentCode,

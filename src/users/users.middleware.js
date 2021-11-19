@@ -15,9 +15,19 @@ const authenticateToken = async (req, res, next) => {
   });
 };
 
-const authRoles = async (req, res, next) => {
+const authUser = async (req, res, next) => {
   if (!req.user) return res.status(400).json({ msg: "You need sign in." });
   next();
+};
+
+const authRole = (roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.roles.toLowerCase())) {
+      return res.status(400).json({ msg: "Not allowed" });
+    }
+
+    next();
+  };
 };
 
 const setUser = async (req, res, next) => {
@@ -28,4 +38,4 @@ const setUser = async (req, res, next) => {
   next();
 };
 
-module.exports = { authenticateToken, authRoles, setUser };
+module.exports = { authenticateToken, authUser, setUser, authRole };
