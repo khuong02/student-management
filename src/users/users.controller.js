@@ -27,7 +27,6 @@ const login = async (req, res) => {
     const user = new User(account, password, null, UserModels);
 
     const results = await user.login(model, generateAccessToken);
-    console.log(results);
 
     const { msg, accessToken } = results;
 
