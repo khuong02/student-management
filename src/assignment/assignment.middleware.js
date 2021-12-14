@@ -29,6 +29,7 @@ const assignmentMiddleware = async (req, res, next) => {
     const check = await check_data(assignmentModels, {
       classCode,
       teacherCode,
+      subjectCode,
     });
 
     if (check)
@@ -36,6 +37,11 @@ const assignmentMiddleware = async (req, res, next) => {
         .status(400)
         .json({ msg: "The teacher has been assigned to teach in this class." });
 
+    const checkSubject = await assignmentModels.findOne({ subjectCode });
+    if (checkSubject)
+      return res
+        .status(400)
+        .json({ msg: "This subject has been teach in this class." });
     next();
   } catch (err) {
     res.status(500).json({ msg: err.message });

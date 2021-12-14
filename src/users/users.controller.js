@@ -41,10 +41,9 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
   try {
     const { uuid } = req.params;
+    const user = new User();
 
     if (uuid == null) return res.sendStatus(401);
-
-    const user = new User();
 
     const msg = await user.logout(uuid);
 

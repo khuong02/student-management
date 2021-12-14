@@ -14,6 +14,11 @@ const refreshTokenSchema = new mongoose.Schema({
   createdAt: { type: Date, expires: 86400, default: Date.now },
 });
 
+refreshTokenSchema.index(
+  { lastModifiedDate: 1 },
+  { expireAfterSeconds: 86400 }
+);
+
 const RefreshToken = mongoose.model(
   "RefreshToken",
   refreshTokenSchema,

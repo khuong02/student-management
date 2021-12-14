@@ -50,6 +50,7 @@ class User {
     const accessToken = cb(payload);
 
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
+    console.log(refreshToken);
 
     await saveData(RefreshToken, { refreshToken, user: user.uuid });
 
