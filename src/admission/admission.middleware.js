@@ -28,11 +28,11 @@ const admissionStudentMiddleware = (model) => {
 
       for (let i = 0; i < aspirations_arr.length; i++) {
         const find_major = await majorModel.findOne({
-          majorCode: aspirations_arr[i],
+          majorCode: aspirations_arr[i].value,
         });
         if (!find_major)
           return res.status(400).json({ msg: "Majors does not exist" });
-        if (point >= find_major.benchmark) setAspiration.push(find_major);
+        if (+point >= find_major.benchmark) setAspiration.push(find_major);
       }
 
       const resultMajors = setAspiration[0];
@@ -112,6 +112,7 @@ const admissionTeacherMiddleware = (model) => {
       teacher.checkInfo();
 
       const { name, email, address, birthday, major } = req.body;
+      console.log(req.body);
 
       //check major
       const checkMajor = await majorModel.findOne({ majorCode: major });
@@ -150,7 +151,7 @@ const admissionTeacherMiddleware = (model) => {
       };
 
       Promise.all([
-        sendMailFunc(contentMail),
+        sendMailFunc(contentMail, true),
         saveData(TeacherModels, information),
         saveData(UserModels, infoUser),
       ])

@@ -33,24 +33,22 @@ class User {
     const user = await this.models.findOne({ account: this.account });
     if (!user) return { msg: "Account does not already exists." };
 
-    const checkRefreshTokenInvalid = await RefreshToken.findOne({
-      user: user.uuid,
-    });
-
-    if (checkRefreshTokenInvalid)
-      return { msg: "Refresh token has not expired!" };
-
     //Checking if password is correct.
     const checkingPassword = await bcrypt.compare(this.password, user.password);
 
     if (!checkingPassword) return { msg: "Password is not correct" };
 
-    const payload = { account: this.account };
+    const payload = { uuid: user.uuid, account: this.account };
 
     const accessToken = cb(payload);
 
+    const checkRefreshTokenInvalid = await RefreshToken.findOne({
+      user: user.uuid,
+    });
+
+    if (checkRefreshTokenInvalid) return { accessToken };
+
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
-    console.log(refreshToken);
 
     await saveData(RefreshToken, { refreshToken, user: user.uuid });
 

@@ -22,17 +22,17 @@ const login = async (req, res) => {
     const roles = account[0] + account[1];
     const model = checkRoles(roles);
 
-    if (!model) return res.status(400).json({ msg: "Model does not exist." });
+    if (!model) return res.json({ msg: "Model does not exist." });
 
     const user = new User(account, password, null, UserModels);
 
     const results = await user.login(model, generateAccessToken);
 
-    const { msg, accessToken } = results;
+    const { accessToken, msg } = results;
 
-    if (msg) return res.status(400).json({ msg });
+    if (msg) return res.json({ msg });
 
-    res.json({ accessToken });
+    res.json({ accessToken, account });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
@@ -57,6 +57,7 @@ const logout = async (req, res) => {
 
 const getDataUser = async (req, res) => {
   const { account } = req.user;
+
   //two number of account is roles
   const roles = account[0] + account[1];
   const model = checkRoles(roles);
@@ -71,25 +72,29 @@ const getDataUser = async (req, res) => {
 };
 
 const refreshTokenCrl = async (req, res) => {
-  const { uuid } = req.body;
+  const { account } = req.body;
 
-  if (uuid == null) return res.sendStatus(401);
+  if (account == null) return res.sendStatus(401);
+  const user = await UserModels.findOne({ account });
 
-  const token = await RefreshToken.findOne({ user: uuid });
+  const token = await RefreshToken.findOne({ user: user.uuid });
 
-  if (!token) return res.sendStatus(403);
+  if (!token)
+    return res.json({ success: false, msg: "Refresh token has expired!" });
 
   jwt.verify(
     token.refreshToken,
     process.env.REFRESH_TOKEN_SECRET,
     (err, user) => {
-      if (err) return res.sendStatus(403);
+      if (err)
+        return res.json({ success: false, msg: "Refresh token has expired!" });
 
       const accessToken = generateAccessToken({
+        uuid: user.uuid,
         account: user.account,
       });
 
-      res.json({ accessToken });
+      res.json({ accessToken, account: user.account });
     }
   );
 };

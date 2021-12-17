@@ -9,8 +9,8 @@ const authenticateToken = async (req, res, next) => {
   if (token == null) return res.sendStatus(401);
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = { account: user.account };
+    if (err) return res.json({ success: false, msg: "Token has expired !" });
+    req.user = { uuid: user.uuid, account: user.account };
     next();
   });
 };
@@ -34,6 +34,7 @@ const setUser = async (req, res, next) => {
   const { uuid } = req.body;
   if (uuid) {
     req.user = await UserModels.findOne({ uuid: req.body.uuid });
+    console.log(req.user);
   }
   next();
 };
