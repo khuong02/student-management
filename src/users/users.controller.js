@@ -80,14 +80,18 @@ const refreshTokenCrl = async (req, res) => {
   const token = await RefreshToken.findOne({ user: user.uuid });
 
   if (!token)
-    return res.json({ success: false, msg: "Refresh token has expired!" });
+    return res
+      .status(403)
+      .json({ success: false, msg: "Refresh token has expired!" });
 
   jwt.verify(
     token.refreshToken,
     process.env.REFRESH_TOKEN_SECRET,
     (err, user) => {
       if (err)
-        return res.json({ success: false, msg: "Refresh token has expired!" });
+        return res
+          .status(403)
+          .json({ success: false, msg: "Refresh token has expired!" });
 
       const accessToken = generateAccessToken({
         uuid: user.uuid,
