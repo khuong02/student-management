@@ -30,7 +30,7 @@ const login = async (req, res) => {
 
     const { accessToken, msg } = results;
 
-    if (msg) return res.json({ msg });
+    if (msg) return res.status(400).json({ msg });
 
     res.json({ accessToken, account });
   } catch (err) {

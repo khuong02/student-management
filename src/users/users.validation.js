@@ -1,7 +1,7 @@
 const Joi = require("@hapi/joi");
 
 const usersValidation = (account) => {
-  const regex = /^([0-9]+)@caothang.edu.vn$/g;
+  const regex = /^([0-9]+)@caothang.edu.vn$/gm;
 
   return regex.test(account);
 };
