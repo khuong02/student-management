@@ -1,6 +1,11 @@
 const router = require("express").Router();
 
-const { authenticateToken, authUser, authRole } = require("./users.middleware");
+const {
+  authenticateToken,
+  authUser,
+  authRole,
+  setUser,
+} = require("./users.middleware");
 const subjectMiddleware = require("../subjects/subject.middleware");
 const learningOutcomesMiddleware = require("../learningOutcomes/learningOutcomes.middleware");
 
@@ -20,6 +25,8 @@ const {
   addPointToStudent,
   getPoint,
   updatePoint,
+  getListStudent,
+  getListTeacher
 } = require("./users.controller");
 
 router.get("/posts", authenticateToken, getDataUser);
@@ -34,68 +41,71 @@ router.patch("/change_password/:uuid", changePassword);
 
 router.post(
   "/create_class",
-  authUser,
-  authRole([process.env.TEACHER, process.env.ADMIN]),
+//   authRole([process.env.TEACHER, process.env.ADMIN]),
   createClass
 );
 
 router.delete(
   "/delete_student/:uuid",
-  authUser,
-  authRole([process.env.TEACHER, process.env.ADMIN]),
+//   authRole([process.env.TEACHER, process.env.ADMIN]),
   deleteStudent
 );
 
 router.post(
   "/add_student",
-  authUser,
-  authRole([process.env.TEACHER, process.env.ADMIN]),
+//   authRole([process.env.TEACHER, process.env.ADMIN]),
   addStudent
 );
 
 router.delete(
   "/delete_class/:classCode",
-  authUser,
-  authRole([process.env.TEACHER, process.env.ADMIN]),
+//   authRole([process.env.TEACHER, process.env.ADMIN]),
   deleteClass
 );
 
 router.delete(
   "/delete_teacher/:uuid",
-  authUser,
-  authRole([process.env.ADMIN]),
+//   authRole([process.env.ADMIN]),
   deleteTeacher
 );
 
 router.post(
   "/create_subject",
-  authUser,
-  authRole([process.env.ADMIN]),
+//   authRole([process.env.ADMIN]),
   subjectMiddleware,
   createSubject
 );
 
 router.delete(
   "/delete_subject/:subjectCode",
-  authUser,
-  authRole([process.env.ADMIN]),
+//   authRole([process.env.ADMIN]),
   deleteSubject
 );
 
 router.post(
   "/add_point",
-  authUser,
-  authRole([process.env.TEACHER, process.env.ADMIN]),
+//   authRole([process.env.TEACHER, process.env.ADMIN]),
   learningOutcomesMiddleware,
   addPointToStudent
 );
 
-router.get("/get_point", authUser, getPoint);
+router.get("/get_point", getPoint);
+
+router.get(
+  "/get_student_list",
+//   authRole([process.env.TEACHER, process.env.ADMIN]),
+  getListStudent
+);
+
+router.get(
+  "/get_teacher_list",
+//   authRole([process.env.ADMIN]),
+  getListTeacher
+);
 
 router.patch(
   "/update_point/:studentCode",
-  authUser,
-  authRole([process.env.TEACHER, process.env.ADMIN]),
+//   authRole([process.env.TEACHER, process.env.ADMIN]),
   updatePoint
 );
 

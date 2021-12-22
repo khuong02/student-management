@@ -24,6 +24,7 @@ const authUser = async (req, res, next) => {
 };
 
 const authRole = (roles) => {
+  //   console.log(roles);
   return (req, res, next) => {
     if (!roles.includes(req.user.roles.toLowerCase())) {
       return res.status(400).json({ msg: "Not allowed" });
@@ -33,13 +34,13 @@ const authRole = (roles) => {
   };
 };
 
-const setUser = async (req, res, next) => {
-  const { uuid } = req.body;
+async function setUser(req, res, next) {
+
+  const { uuid } = req.params;
   if (uuid) {
-    req.user = await UserModels.findOne({ uuid: req.body.uuid });
-    console.log(req.user);
+    req.user = await UserModels.findOne({ uuid });
   }
   next();
-};
+}
 
 module.exports = { authenticateToken, authUser, setUser, authRole };

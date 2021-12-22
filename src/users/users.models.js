@@ -49,6 +49,10 @@ const studentSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  activity: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const teacherSchema = new mongoose.Schema({
@@ -89,6 +93,10 @@ const teacherSchema = new mongoose.Schema({
   },
   address: {
     type: String,
+  },
+  activity: {
+    type: Boolean,
+    default: true,
   },
 });
 

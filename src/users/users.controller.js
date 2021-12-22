@@ -1,5 +1,5 @@
 const RefreshToken = require("../../models/refreshToken.models");
-const { StudentModels, UserModels } = require("./users.models");
+const { StudentModels, UserModels, TeacherModels } = require("./users.models");
 const Majors = require("../majors/majors.models");
 const LearningOutcomesModels = require("../learningOutcomes/learningOutcomes.models");
 
@@ -259,6 +259,35 @@ const updatePoint = async (req, res) => {
   }
 };
 
+const getListStudent = async (req, res) => {
+  try {
+    console.log(1);
+    const data = await StudentModels.find();
+
+    if (!data || data.length === 0)
+      return res.json({ msg: "Student list is empty." });
+
+    return res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const getListTeacher = async (req, res) => {
+  try {
+    console.log(1);
+    const data = await TeacherModels.find();
+    console.log(data);
+
+    if (!data || data.length === 0)
+      return res.json({ msg: "Teacher list is empty." });
+
+    return res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
 module.exports = {
   login,
   getDataUser,
@@ -275,4 +304,6 @@ module.exports = {
   addPointToStudent,
   getPoint,
   updatePoint,
+  getListStudent,
+  getListTeacher,
 };
