@@ -14,6 +14,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //routers
 app.use("/api/admission", require("./src/admission/admission.router"));
 app.use("/api/majors", require("./src/majors/majors.routers"));
+app.use("/api/subjects", require("./src/subjects/subject.routers"));
+app.use("/api/classes", require("./src/class/class.routers"));
 app.use("/api/user", require("./src/users/users.routers"));
 app.use("/api/assignment", require("./src/assignment/assignment.router"));
 

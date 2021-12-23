@@ -261,7 +261,6 @@ const updatePoint = async (req, res) => {
 
 const getListStudent = async (req, res) => {
   try {
-    console.log(1);
     const data = await StudentModels.find();
 
     if (!data || data.length === 0)
@@ -275,9 +274,7 @@ const getListStudent = async (req, res) => {
 
 const getListTeacher = async (req, res) => {
   try {
-    console.log(1);
     const data = await TeacherModels.find();
-    console.log(data);
 
     if (!data || data.length === 0)
       return res.json({ msg: "Teacher list is empty." });

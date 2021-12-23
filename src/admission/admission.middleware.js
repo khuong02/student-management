@@ -130,6 +130,7 @@ const admissionTeacherMiddleware = (model) => {
         teacherCode,
         birthday: new Date(birthday),
         account,
+        year: new Date().getFullYear(),
         password: await hashPassword(password),
         uuid: uuid_v4(),
       };

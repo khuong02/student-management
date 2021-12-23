@@ -94,6 +94,9 @@ const teacherSchema = new mongoose.Schema({
   address: {
     type: String,
   },
+  year: {
+    type: String,
+  },
   activity: {
     type: Boolean,
     default: true,
