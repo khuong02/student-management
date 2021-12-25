@@ -6,7 +6,7 @@ const getSubjects = async (req, res) => {
     if (!subjects || subjects.length === 0)
       return res.json({ success: false, msg: "Subject is empty." });
 
-    res.json({ success: true, subjects });
+    res.json({ success: true, data: subjects });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
