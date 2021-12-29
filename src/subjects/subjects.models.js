@@ -10,14 +10,14 @@ const subjectSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  numberOfCredits: {
-    type: Number,
-    required: true,
-  },
-  semester: {
-    type: Number,
-    required: true,
-  },
+  //   numberOfCredits: {
+  //     type: Number,
+  //     required: true,
+  //   },
+  //   semester: {
+  //     type: Number,
+  //     required: true,
+  //   },
   majorCode: {
     type: String,
     required: true,

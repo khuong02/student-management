@@ -146,6 +146,7 @@ class Teacher extends User {
       className,
       classCode: uuid_v4(),
       majorCode,
+      year: new Date().getFullYear(),
     };
 
     await saveData(ClassModels, informationOfClass);
