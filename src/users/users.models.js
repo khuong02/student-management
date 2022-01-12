@@ -53,6 +53,9 @@ const studentSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  avatar: {
+    type: String,
+  },
 });
 
 const teacherSchema = new mongoose.Schema({
@@ -100,6 +103,9 @@ const teacherSchema = new mongoose.Schema({
   activity: {
     type: Boolean,
     default: true,
+  },
+  avatar: {
+    type: String,
   },
 });
 

@@ -6,8 +6,18 @@ const assignmentValidation = (data) => {
     classCode: Joi.string().required(),
     subjectCode: Joi.string().required(),
     semester: Joi.number().required(),
+    typeAssignment: Joi.number().required(),
   });
   return schema.validate(data);
 };
 
-module.exports = assignmentValidation;
+const assignmentHomeRoomTeacherValidation = (data) => {
+  const schema = Joi.object({
+    teacherCode: Joi.string().required(),
+    classCode: Joi.string().required(),
+    typeAssignment: Joi.number().required(),
+  });
+  return schema.validate(data);
+};
+
+module.exports = { assignmentValidation, assignmentHomeRoomTeacherValidation };

@@ -1,7 +1,9 @@
 const router = require("express").Router();
-const assignmentMiddleware = require("./assignment.middleware");
+const {
+  assignmentTeacherSubjectMiddleware,
+} = require("./assignment.middleware");
 const assignmentCrl = require("./assignment.controller");
 
-router.post("/", assignmentMiddleware, assignmentCrl);
+router.post("/", assignmentTeacherSubjectMiddleware, assignmentCrl);
 
 module.exports = router;

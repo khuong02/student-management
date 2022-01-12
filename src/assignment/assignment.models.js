@@ -11,13 +11,15 @@ const assignmentSchema = new mongoose.Schema({
   },
   subjectCode: {
     type: String,
-    required: true,
   },
   year: {
     type: Date,
     default: new Date().getFullYear(),
   },
   semester: {
+    type: Number,
+  },
+  typeAssignment: {
     type: Number,
     required: true,
   },
