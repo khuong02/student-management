@@ -35,7 +35,7 @@ module.exports = async function sendMailFunc(contentMail, accept) {
             <p>Your MSSV: ${contentMail.code}</p>
             <p>Account: ${contentMail.account}</p>
             <p>Password: ${contentMail.password}</p>
-            <p>Majors: ${contentMail.nameMajors}</p>
+            <p>Majors: ${contentMail.nameMajor}</p>
         
             <p>If the button doesn't work for any reason, you can also click on the link below:</p>
             </div>

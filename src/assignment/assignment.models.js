@@ -14,7 +14,7 @@ const assignmentSchema = new mongoose.Schema({
   },
   year: {
     type: Date,
-    default: new Date().getFullYear(),
+    default: new Date(),
   },
   semester: {
     type: Number,

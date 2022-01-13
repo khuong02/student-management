@@ -34,7 +34,6 @@ const assignmentTeacherSubjectMiddleware = async (req, res, next) => {
     if (typeAssignment === +process.env.HOME_ROOM_TEACHER) {
       check = await assignmentModels.findOne({
         classCode,
-        teacherCode,
         typeAssignment,
       });
     }

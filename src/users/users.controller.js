@@ -261,10 +261,21 @@ const updatePoint = async (req, res) => {
 
 const getListStudent = async (req, res) => {
   try {
-    const data = await StudentModels.find();
+    const students = await StudentModels.find().lean();
+    const majors = await Majors.find().lean();
 
-    if (!data || data.length === 0)
+    if (!students || students.length === 0)
       return res.json({ msg: "Student list is empty." });
+
+    const data = students.map((student) => {
+      const nameMajor =
+        majors.length > 0
+          ? majors.find((major) => major.majorCode === student.majorCode)
+              .nameMajor
+          : "Not found major";
+
+      return { ...student, nameMajor };
+    });
 
     return res.json({ success: true, data });
   } catch (err) {
@@ -274,10 +285,21 @@ const getListStudent = async (req, res) => {
 
 const getListTeacher = async (req, res) => {
   try {
-    const data = await TeacherModels.find();
+    const teachers = await TeacherModels.find().lean();
+    const majors = await Majors.find().lean();
 
-    if (!data || data.length === 0)
+    if (!teachers || teachers.length === 0)
       return res.json({ msg: "Teacher list is empty." });
+
+    const data = teachers.map((teacher) => {
+      const nameMajor =
+        majors.length > 0
+          ? majors.find((major) => major.majorCode === teacher.majorCode)
+              .nameMajor
+          : "Not found major";
+
+      return { ...teacher, nameMajor };
+    });
 
     return res.json({ success: true, data });
   } catch (err) {

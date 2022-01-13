@@ -11,4 +11,16 @@ const assignmentCrl = async (req, res) => {
   }
 };
 
-module.exports = assignmentCrl;
+const getAssignment = async (req, res) => {
+  try {
+    const data = await assignmentModels.find();
+
+    if (data.length === 0) return res.json({ msg: "Not yet assignment", data });
+
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+module.exports = { assignmentCrl, getAssignment };

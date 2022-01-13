@@ -112,7 +112,6 @@ const admissionTeacherMiddleware = (model) => {
       teacher.checkInfo();
 
       const { name, email, address, birthday, major } = req.body;
-      console.log(req.body);
 
       //check major
       const checkMajor = await majorModel.findOne({ majorCode: major });
@@ -130,7 +129,6 @@ const admissionTeacherMiddleware = (model) => {
         teacherCode,
         birthday: new Date(birthday),
         account,
-        year: new Date().getFullYear(),
         password: await hashPassword(password),
         uuid: uuid_v4(),
       };

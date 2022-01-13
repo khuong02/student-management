@@ -1,4 +1,5 @@
 const { v4: uuid_v4 } = require("uuid");
+const moment = require("moment");
 
 const Users = require("./users.models");
 const RefreshToken = require("../../models/refreshToken.models");
@@ -134,9 +135,19 @@ class Teacher extends User {
 
   createClass = async (nameMajor, majorCode) => {
     const check_major = await MajorModels.findOne({ majorCode });
+    const CurrentYear = moment(new Date()).format("DD-MM-YYYY");
+
     if (!check_major) throw new Error("Major does not exist");
     //count class in major
-    const count = await ClassModels.countDocuments({ majorCode }).count();
+    const findClasses = await ClassModels.find({
+      majorCode,
+    }).then((classes) =>
+      classes.filter((obj) => {
+        return new Date(obj.year).getFullYear() === new Date().getFullYear();
+      })
+    );
+
+    const count = findClasses.length;
 
     const className = divideClass(nameMajor, count + 1);
 
@@ -146,7 +157,6 @@ class Teacher extends User {
       className,
       classCode: uuid_v4(),
       majorCode,
-      year: new Date().getFullYear(),
     };
 
     await saveData(ClassModels, informationOfClass);
@@ -171,15 +181,15 @@ class Teacher extends User {
 
       if (!find_student)
         throw new Error(
-          `Students with student code ${list_student[i]}  does not exist`
+          `Students with student code ${find_student.studentCode}  does not exist`
         );
       if (find_student.classCode.trim() !== "")
         throw new Error(
-          `Students with student code ${list_student[i]}  already have classes`
+          `Students with student code ${find_student.studentCode}  already have classes`
         );
       if (find_student.majorCode !== find_class.majorCode)
         throw new Error(
-          `Students with student code ${list_student[i]} not in this major `
+          `Students with student code ${find_student.studentCode} not in this major `
         );
     }
 

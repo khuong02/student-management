@@ -20,6 +20,10 @@ const classSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  year: {
+    type: Date,
+    default: new Date(),
+  },
 });
 
 const ClassModels = mongoose.model("ClassModels", classSchema, "Class");
